@@ -20,14 +20,22 @@ var TerrainTileRect = [TerrainTotal]image.Rectangle{
 	TerrainCastle:   image.Rect(2*TileSize, 3*TileSize, (2+1)*TileSize, (3+1)*TileSize),
 }
 
-func (r *Renderer) DrawTerrainLayer(grid [GridSize][GridSize]struct{ Type TerrainType }) {
+type TerrainDrawData struct {
+	TerrainType TerrainType
+}
+
+type TerrainDataArr struct {
+	Grid [GridSize][GridSize]TerrainDrawData
+}
+
+func (r *Renderer) DrawTerrainLayer(tda *TerrainDataArr) {
 	r.ResMan.TerrainLayer.Fill(color.Transparent)
 
 	op := &ebiten.DrawImageOptions{}
 
 	for y := 0; y < GridSize; y++ {
 		for x := 0; x < GridSize; x++ {
-			tileType := grid[y][x].Type
+			tileType := tda.Grid[y][x].TerrainType
 			if tileType == TerrainCastle { // TerrainCastle
 				continue
 			}
@@ -47,4 +55,16 @@ func (r *Renderer) DrawCastleLayer() {
 	op.GeoM.Translate(cx*TileSize, cy*TileSize)
 	tr := TerrainTileRect[TerrainCastle]
 	r.ResMan.CastleLayer.DrawImage(r.ResMan.TileImage.SubImage(tr).(*ebiten.Image), op) // TerrainCastle
+}
+
+func (r *Renderer) DrawLayer(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	screenW := float64(screen.Bounds().Dx())
+	screenH := float64(screen.Bounds().Dy())
+	op.GeoM.Reset()
+	op.GeoM.Translate(-r.Camera.X, -r.Camera.Y)
+	op.GeoM.Scale(r.Camera.Zoom, r.Camera.Zoom)
+	op.GeoM.Translate(screenW/2, screenH/2)
+	screen.DrawImage(r.ResMan.TerrainLayer, op)
+	screen.DrawImage(r.ResMan.CastleLayer, op)
 }

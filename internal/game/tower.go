@@ -2,6 +2,9 @@ package game
 
 import (
 	. "TowerDefense/internal/vars"
+	"fmt"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Tower struct {
@@ -125,6 +128,45 @@ func (ta *TowerArray) Update(dt float32, enemies *EnemyArray, projectiles *Proje
 				projectiles.Add(startX, startY, target.Id, t.Damage)
 				// 重設冷卻時間計時器
 				t.Cooldown = t.MaxCD
+			}
+		}
+	}
+}
+
+// hasPathToCastle 檢查地圖邊緣是否有路徑可以到達城堡
+func hasPathToCastle(nav *NavigationMap) bool {
+	for x := 0; x < GridSize; x++ {
+		if nav.Directions[0][x] != -1 || nav.Directions[GridSize-1][x] != -1 {
+			return true
+		}
+	}
+	for y := 0; y < GridSize; y++ {
+		if nav.Directions[y][0] != -1 || nav.Directions[y][GridSize-1] != -1 {
+			return true
+		}
+	}
+	return false
+}
+
+func (ta *TowerArray) Place(g *Game, towerType TowerType) {
+	mx, my := ebiten.CursorPosition()
+	screenW := float64(ScreenWidth)
+	screenH := float64(ScreenHeight)
+	wx := (float64(mx)-screenW/2)/g.Renderer.Camera.Zoom + g.Renderer.Camera.X
+	wy := (float64(my)-screenH/2)/g.Renderer.Camera.Zoom + g.Renderer.Camera.Y
+	gridX := int(wx / TileSize)
+	gridY := int(wy / TileSize)
+
+	if g.Money >= TowerCost[towerType] {
+		if g.Towers.TryAddTower(towerType, gridX, gridY, g.Map) {
+			newNav := CalculateNavigation(g.Map, g.Towers)
+			if hasPathToCastle(newNav) {
+				g.Nav = newNav
+				g.Money -= TowerCost[towerType]
+				fmt.Printf("Placed %s ! Money left: %d\n", TowerName[towerType], g.Money)
+			} else {
+				g.Towers.Count--
+				fmt.Println("Cannot place tower here: path to castle would be blocked!")
 			}
 		}
 	}

@@ -41,6 +41,7 @@ const (
 	MaxTowers        = 100
 	MaxProjectiles   = 200
 	GenerateMapScale = 0.08
+	InitialMoney     = 100
 )
 
 var Dx = [4]int{0, 0, -1, 1}
@@ -98,3 +99,16 @@ const (
 	TowerRapid
 	TowerTotal
 )
+
+var TowerCost = [TowerTotal]int{
+	TowerNone:   0,
+	TowerBasic:  10,
+	TowerSniper: 20,
+	TowerRapid:  30,
+}
+var TowerName = [TowerTotal]string{
+	TowerNone:   "None",
+	TowerBasic:  "Basic Tower",
+	TowerSniper: "Sniper Tower",
+	TowerRapid:  "Rapid Tower",
+}
