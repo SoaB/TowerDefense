@@ -1,4 +1,4 @@
-package gameMap
+package game
 
 import (
 	"math/rand"

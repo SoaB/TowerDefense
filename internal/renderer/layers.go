@@ -6,8 +6,6 @@ import (
 
 	. "TowerDefense/internal/vars"
 
-	"TowerDefense/internal/gameMap"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -22,14 +20,14 @@ var TerrainTileRect = [TerrainTotal]image.Rectangle{
 	TerrainCastle:   image.Rect(2*TileSize, 3*TileSize, (2+1)*TileSize, (3+1)*TileSize),
 }
 
-func (r *Renderer) DrawTerrainLayer(gm *gameMap.GameMap) {
+func (r *Renderer) DrawTerrainLayer(grid [GridSize][GridSize]struct{ Type TerrainType }) {
 	r.ResMan.TerrainLayer.Fill(color.Transparent)
 
 	op := &ebiten.DrawImageOptions{}
 
 	for y := 0; y < GridSize; y++ {
 		for x := 0; x < GridSize; x++ {
-			tileType := gm.Grid[y][x].Type
+			tileType := grid[y][x].Type
 			if tileType == TerrainCastle { // TerrainCastle
 				continue
 			}

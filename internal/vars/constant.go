@@ -43,6 +43,10 @@ const (
 	GenerateMapScale = 0.08
 )
 
+var Dx = [4]int{0, 0, -1, 1}
+var Dy = [4]int{-1, 1, 0, 0}
+var ReverseDir = [4]int{1, 0, 3, 2}
+
 type TerrainType int
 
 const (
@@ -56,6 +60,17 @@ const (
 	TerrainCastle
 	TerrainTotal
 )
+
+var TerrainCost = [TerrainTotal]int{
+	TerrainGrass:    2,
+	TerrainHill:     3,
+	TerrainSand:     5,
+	TerrainMud:      8,
+	TerrainStone:    1,
+	TerrainMountain: -1,
+	TerrainLake:     -1,
+	TerrainCastle:   0,
+}
 
 type EnemyType int8
 
@@ -72,4 +87,14 @@ const (
 	EnemyHealthy EnemyStatus = iota
 	EnemyHurt
 	EnemyDead
+)
+
+type TowerType int8
+
+const (
+	TowerNone TowerType = iota
+	TowerBasic
+	TowerSniper
+	TowerRapid
+	TowerTotal
 )

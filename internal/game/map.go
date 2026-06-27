@@ -1,4 +1,4 @@
-package gameMap
+package game
 
 import (
 	. "TowerDefense/internal/vars"

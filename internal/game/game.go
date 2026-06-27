@@ -1,7 +1,6 @@
 package game
 
 import (
-	"TowerDefense/internal/gameMap"
 	"TowerDefense/internal/renderer"
 	. "TowerDefense/internal/vars"
 
@@ -9,15 +8,26 @@ import (
 )
 
 type Game struct {
-	Map      *gameMap.GameMap
+	Map      *GameMap
 	Renderer *renderer.Renderer
+}
+
+// convertGridToRendererFormat 將 GameMap 的 Grid 轉換為 renderer 需要的格式
+func convertGridToRendererFormat(gm *GameMap) [GridSize][GridSize]struct{ Type TerrainType } {
+	var result [GridSize][GridSize]struct{ Type TerrainType }
+	for y := 0; y < GridSize; y++ {
+		for x := 0; x < GridSize; x++ {
+			result[y][x].Type = gm.Grid[y][x].Type
+		}
+	}
+	return result
 }
 
 func NewGame() *Game {
 	game := &Game{}
-	game.Map = gameMap.NewGameMap(GenerateMapScale) // Initialize the game map
-	game.Renderer = renderer.NewRenderer()          // Initialize the renderer
-	game.Renderer.DrawTerrainLayer(game.Map)
+	game.Map = NewGameMap(GenerateMapScale) // Initialize the game map
+	game.Renderer = renderer.NewRenderer()  // Initialize the renderer
+	game.Renderer.DrawTerrainLayer(convertGridToRendererFormat(game.Map))
 	game.Renderer.DrawCastleLayer()
 	return game
 }
